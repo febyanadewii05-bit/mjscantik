@@ -1,4 +1,4 @@
-name: Test Workflow
+name: Test and Deploy Workflow
 
 on:
   push:
@@ -30,3 +30,24 @@ jobs:
 
       - name: Execute Bash Test
         run: bash scripts/test.sh
+
+  deploy:
+    name: Package Project
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Create Package
+        run: |
+          tar -czf mjscantik.tar.gz \
+            --exclude=.git \
+            .
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mjscantik-package
+          path: mjscantik.tar.gz
